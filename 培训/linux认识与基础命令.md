@@ -38,22 +38,70 @@ Advanced Package Tool
 # 命令
 
 ## 查看硬件
-- 查看制造商
-- 查看cpu
-- 查看内存
-- 网线链接
-- 全双工还是半双工、传输速率
-- 网卡驱动版本
-- 分区情况
-- pci设备
-- usb设备
+- 查看制造商  `dmidecode`
+- 查看cpu `cat /proc/cpuinfo`
+- 查看内存 `cat /proc/meminfo` 或者`free -m`
+- 网线链接 `mii-tool`
+- 全双工还是半双工、传输速率  `ethtool eth0`
+- 网卡驱动版本 `ethtool -i eth0`
+- 分区情况 `fdisk -l`
+- pci设备 `lspci`
+- usb设备 `lsusb`
   
 ## 查看系统
-- 当前目录
-- 当前时间
-- 格式化时间输出
-- 发行版
-- 查看系统环境变量
+- 当前目录 `pwd`
+- 当前时间 `date`
+- 格式化时间输出 `date "+%Y-%m-%d %H:%M:%S"`
+- 发行版 `cat /etc/issue`
+- 查看系统环境变量 `env`
+- 修改系统环境变量  `export 某一项=xxx`
+- 内核版本  `uname -r`
+- 查看系统服务情况  `chkconfig --list`
+- 设置服务开机启动or关闭 `chkconfig -level 等级号 服务名 on/off`
+- 通用的开机启动 `vim etc/rc.local`
+- 查看运行级别 `run level` 或者 `grep default /etc/inittab`
+- 查看网卡ip `ifconfig`
+- 查看某个网卡ip `ifconfig  网卡`
+
+## 查看目录
+- 改变modify和change `touch filename`
+- 查看当前目录大小 `du -sh`
+- 查看指定目录深度的目录大小 `du -h --max-depth= num`
+- 查看分区容量大小 `df -h`
+- 统计目录和文件个数 `ls -l |wc -l`
+
+## 操作目录
+- 递归创建目录 `mkdir -p path`
+- 复制目录 `cp dir1 dir2`
+- 递归复制 `cp -R dir1 dir2`
+- 保留原目录的属性、权限 `cp -a dir1 dir2`
+ 
+## 文件
+- 创建文件 `vim filename` 或者 `touch filename`
+- 从头开始显示文件所有内容 `cat filename`
+- 从后面开始显示文件所有 `tac filename`
+- 逐屏查看 `more filename`
+- 显示开头10行 `head filename`
+- 指定行数量 `head -n num filename`
+- 显示末尾10 ` tail filename`
+- 指定行数量 `tail -n num filename`
+- 持续监视文件输出 `tail -f filename` 
+- 查看文件状态 `stat filename`
+- 查看文件中是否包含keyword `grep keyword filename`
+- 查看当前目录及其子目录哪个文件包含keyword `grep -R keyword *.`
+- 移动文件 `mv filename path`
+- 重命名文件 `mv filename newfilename`
+- 删除文件 `rm -f filename`
+- 删除目录 `rm -rf `
+
+## vim
+- q退出编辑
+- q！强制退出
+- w 保存
+- wq 保存退出
+- x 保存退出
+  
+
 
 ## tar
 
@@ -137,8 +185,97 @@ Advanced Package Tool
 - cat > file 使用后，linux会让我们添加内容，当添加完内容后，回车另起一行，按ctrl+d结束或者不按回车，按两次ctrl+d
 - cat > file << xxx 添加内容，以输入xxx为结束
 
-### grep
+## grep
+命令格式 `grep [option] keyword file`
+- -a 不要忽略二进制数据
+- -i 忽略大小写
 
+## 重定向信道
+- 输入重定向 `cat < file`
+- 输出重定向 `cat file > newfile`
+- 错误输出重定向 `cat file 2> newfile`
+- 输出和错误输出都重定向一个文件 `cat file >newfile 2>&1`
+  
+## 进程管理
+- 查看是否存在某个进程 `ps aux |grep keyword`
+- 杀死进程 `pkill keyword` `killall keyword`
+- 查看进程号 `pidof keyword`
+
+## Rpm
+### 安装
+- 安装 `rpm -ivh filename`
+- 强行安装 `rpm -ivh --nodeps filename`
+- 升级包 `rpm -Uvh filename`
+- 卸载 `rpm -e filename`
+- 忽略包依赖卸载 `rpm -e --nodeps filename`
+### 查询
+- 查看是否安装某个包 `rpm -qa |grep -i filename`
+- 查看已安装的rpm包安装文件列表 `rpm -ql filename`
+- 查看未安装的rpm包的含文件列表 `rpm -qpl filename`
+- 查看某个文件由哪个包提供 `rpm -qf filename`
+
+## yum
+- 安装`yum -y install filename`
+- 卸载`yum remove filename`
+- 查看哪个包提供某个文件`yum provides filename`
+
+## 网络
+### 远程链接
+- ssh登录 ``
+- 指定端口登录
+- 指定用户名
+- 指定认证key文件
+- 取消host检查
+- 远程执行命令 
+- 详细显示连接过程
+### scp拷贝
+- 指定端口
+- 指定认证key文件
+- scp目录
+- scp限速
+- 取消host检查
+  
+## 网卡相关
+- 禁用网卡 `ifdown eth1`
+- 开启网卡 `ifup eth1`
+- 重启网络，使配置生效 `service network restart`
+
+## 系统性能监控
+- top工具  实时显示系统中各个进程的资源占用状况
+- vmstat工具
+  - 每三秒汇总一次，连续报告5次  `vmstat 3 5`
+- iostat工具 
+  主要是磁盘IO性能监视
+  - 每三秒汇总一次，连续报告5次  `iostat -d -k 3 5`
+- dstat 输入dstat进行查看
+  - 怀疑cpu存在瓶颈 `sar -u` `sar -q`
+  - 怀疑内存存在瓶颈 `sar -B` `sar -r` `sar -W`
+  - 怀疑i/o存在瓶颈 `sar -b` `sar -u` `sar -d`
+  - 查看历史记录 `sar -f filename`
+
+## 网络监控
+### vnstat
+- 网卡流量 `vnstat -l`
+- -i指定网卡 `vnstat -l -i eth0`
+
+### netstat
+- 查看路由表 `netstat -nr`
+- 查看tcp监听端口`netstat -tlnp`
+- 查看udp监听端口`netstat -ulnp`
+- 查看所有链接 `netstat -an`
+
+### ping
+- 查看域名解析 `ping domain`
+- 指定ping次数 `ping -c num domain`
+- 指定ping的出口 `ping -l ip domain`
+- 指定发包间隔 `ping -i num domain`
+
+### 其他网络命令
+- 指定dns服务器 `dig dns服务器 domain`
+- 路由跟踪 `traceroute domain`
+- ping+tracert ： mtr  `mtr domain`
+- nslookup  查看域名解析是否正常，`nslookup url [dns-server]`
+- host 分析域名查询工具，测试域名系统工作是否正常 `host domain`
 ##  其他
 - basename 返回文件名称
 - dirname 返回路径字符串的上层目录路径
